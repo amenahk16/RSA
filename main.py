@@ -1,13 +1,26 @@
+'''
+Developer : Aminah Abdullah Albuainain
+ID : 219003367
+This code build for course requirement " Applied Cryptography " Assignment 1
+Note that I use multiple source to build this code
+So best thank for them to share their knowledge
+Credit :
+(1) https://pycryptodome.readthedocs.io/en/latest/src/hash/hash.html
+(2) https://inventwithpython.com/rabinMiller.py
+
+'''
+
+
 import random
 import math
 import textwrap
 import DS
 from colorama import Fore, Back, Style
-import last
-from hashlib import sha512
-import re
 
 def fillEculidanTable (a,b ) :
+
+   # Here I have already built this code same as solving EEA in table
+
         flag = True
         table = []
 
@@ -69,8 +82,7 @@ def isPrime(num):
 
     # About 1/3 of the time we can quickly determine if num is not prime
     # by dividing by the first few dozen prime numbers. This is quicker
-    # than rabinMiller(), but unlike rabinMiller() is not guaranteed to
-    # prove that a number is prime.
+    # than millerRaben().
     quickPrimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53,
                    59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113,
                    127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181,
@@ -116,14 +128,16 @@ def generatePrime(bit=1024):
         if isPrime(num):
             return num
 def extendEculidAlgo (n, e):
-
+# We fill table by calling function
     result = fillEculidanTable(n, e)
-
+# If result is negative then take mod of n
     if result < 0:
         result = result % n
-
+# Verfiy it's inverse
     if (math.gcd(n, e) == 1):
        print("")
+
+# Else given number have no inverse
     else:
         print("Inverse not applicable ")
 
@@ -139,19 +153,33 @@ def encDec() :
     bit = input("Enter the Length of the Prime Number that would be Generated"
                 + " \nNote: The higher length the more secure and time consuming")
     bit = int(bit)
+    #validate user input
+    while (bit <1 ):
+        bit = input("Enter the Length of the Prime Number that would be Generated"
+        + " \nNote: The higher length the more secure and time consuming")
+        bit = int(bit)
+    #genrate two prime number
     p = generatePrime(bit)
     q = generatePrime(bit)
+
+    # ensure p ! = q otherwise try again to find different q
     while (q == p): q = generatePrime(bit)
+
+    #find n, phi , e, d by calling previous function that explained
     n = p * q
     phi = (q - 1) * (p - 1)
     e = findExpo(phi)
     d = extendEculidAlgo(phi, e)
+
+    # wrap output to have nice look
     wrapper = textwrap.TextWrapper(width=43)
     wrappP = wrapper.wrap(text=str(p))
     wrappQ = wrapper.wrap(text=str(q))
     wrappPhi = wrapper.wrap(text=str(phi))
     wrappN = wrapper.wrap(text=str(n))
 
+
+    #start Bob dialog
     print(20 * "-" + " Bob (Owner) " + 20 * "-")
     print("Genrated p = ")
     for i in wrappP:
@@ -173,7 +201,7 @@ def encDec() :
     print("Transmit e , n to Alice to use it in encryption" + " ." * 8)
     print("")
 
-
+    # start Alice dialog
     print(20 * "-" + " Alice " + 20 * "-")
     print("received n = ")
     for i in wrappN:
@@ -183,6 +211,7 @@ def encDec() :
     print("received e = ")
     print(str(e))
 
+    #Give user chance to enc/dec
     plain = input("Assume you are Alice what kind of message to you want to encrypt ? ")
     cipher = []
 
@@ -203,8 +232,19 @@ def encDec() :
     print("Decrypted Message :  ")
     print("".join(plainAfterEnc))
 
+
+
+
+##########################################################################################
+# Main dialogue will contain all RSA usage and let user choose
+    # 1) Encrypt / Decrypt
+    # 2) Signing And Verifying
+    # 0) Exit
+
+##########################################################################################
 print("-"*65)
 c = input("Hello to RSA world, We have many usage for RSA which would you like to try ?\n1)Encrypt/Decrypt \n2)Signing And Verfiying \n0)Exit")
+#Ensure valid entery
 try :
     c = int(c)
     while(c!=0) :
